@@ -17,11 +17,17 @@
                 if (spanDigits) {
                     spanDigits = spanDigits.replace(/[,]+/g, '')
                 }
-                return parseInt(spanDigits, 10)
+
+                try {
+                    return parseInt(spanDigits, 10)
+                } catch (e) {
+                    console.error(e)
+                    return 0
+                }
             }
 
             const writeValueToElement = (el, value) => {
-                el.innerHTML = value.toLocaleString()
+                el.innerHTML = value && value.toLocaleString()
             }
 
             const getValueFromSpans = (el) => {
@@ -31,12 +37,18 @@
                 for (let i = 0; i < spans.length; i++) {
                     spanDigits += spans[i].innerHTML
                 }
-                return parseInt(spanDigits, 10)
+
+                try {
+                    return parseInt(spanDigits, 10)
+                } catch (e) {
+                    console.error(e)
+                    return 0
+                }
             }
 
             const writeNumberToSpans = (el, value) => {
                 const spans = el.getElementsByTagName('span')
-                let strValue = value.toString()
+                let strValue = value && value.toString() || ''
                 strValue.split('').forEach((digit, idx) => {
                     spans[idx].innerHTML = digit
                 })
@@ -61,12 +73,14 @@
                 }, frameDurationPerSecond)
             }
 
+            // Run the animation for elements with the appropriate classes
             const runAnimations = () => {
                 const countupEls = document.querySelectorAll('.animate-number')
                 countupEls.forEach((el) => animateCountUp(el, getValueFromSpans, writeNumberToSpans))
                 const countupNonSpanEls = document.querySelectorAll('.animate-non-span-number')
                 countupNonSpanEls.forEach((el) => animateCountUp(el, getValueFromElement, writeValueToElement))
             }
+
         </script>
         <style type="text/css">
             .counter-numbers {
