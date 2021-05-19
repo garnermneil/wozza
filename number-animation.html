@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+        <script type="text/javascript">
+            const animationDurationInMs = 1000
+            const frameDurationPerSecond = 1000 / 60
+            const totalFrames = Math.round(animationDurationInMs / frameDurationPerSecond)
+            const easeOutQuad = (t) => t * (2 - t)
+
+            const getValueFromElement = (el) => {
+                let spanDigits = el.innerHTML
+
+                if (spanDigits) {
+                    spanDigits = spanDigits.replace(/[,]+/g, '')
+                }
+                return parseInt(spanDigits, 10)
+            }
+
+            const writeValueToElement = (el, value) => {
+                el.innerHTML = value.toLocaleString()
+            }
+
+            const getValueFromSpans = (el) => {
+                const spans = el.getElementsByTagName('span')
+                let spanDigits = ''
+
+                for (let i = 0; i < spans.length; i++) {
+                    spanDigits += spans[i].innerHTML
+                }
+                return parseInt(spanDigits, 10)
+            }
+
+            const writeNumberToSpans = (el, value) => {
+                const spans = el.getElementsByTagName('span')
+                let strValue = value.toString()
+                strValue.split('').forEach((digit, idx) => {
+                    spans[idx].innerHTML = digit
+                })
+            }
+
+            const animateCountUp = (el, readHandler, updateHandler) => {
+                let frame = 0
+                const countTo = readHandler(el)
+
+                const counter = setInterval(() => {
+                    frame++
+                    const progress = easeOutQuad(frame / totalFrames)
+                    const currentCount = Math.round(countTo * progress)
+
+                    if (parseInt(el.innerHTML, 10) !== currentCount) {
+                        updateHandler(el, currentCount)
+                    }
+
+                    if (frame === totalFrames) {
+                        clearInterval(counter)
+                    }
+                }, frameDurationPerSecond)
+            }
+
+            const runAnimations = () => {
+                const countupEls = document.querySelectorAll('.animate-number')
+                countupEls.forEach((el) => animateCountUp(el, getValueFromSpans, writeNumberToSpans))
+                const countupNonSpanEls = document.querySelectorAll('.animate-non-span-number')
+                countupNonSpanEls.forEach((el) => animateCountUp(el, getValueFromElement, writeValueToElement))
+            }
+        </script>
+        <style type="text/css">
+            .counter-numbers {
+                -webkit-text-size-adjust: 100%;
+                word-wrap: break-word;
+                color: #222;
+                font-family: 'Yantramanav', sans-serif;
+                line-height: 1.618;
+                text-rendering: optimizeLegibility;
+                font-weight: 300;
+                box-sizing: border-box;
+                display: block;
+                margin: 0 -5px;
+                font-size: 32px;
+                margin-bottom: 20px;
+            }
+
+            .counter-numbers span {
+                border: 1px solid #333;
+                border-radius: 3px;
+                padding: 0 5px;
+                line-height: 0.5;
+                margin: 0 3px;
+            }
+        </style>
+    </head>
+
+    <body onLoad="runAnimations()">
+        <div class="co2 cols">
+            <div>
+                <span class="counter-numbers animate-number">
+                    <span>1</span><span>1</span>,<span>0</span><span>4</span><span>0</span>,<span>5</span><span>9</span
+                    ><span>7</span>
+                </span>
+                <p class="lrg">Total Kgs of carbon saved by UKE customers</p>
+            </div>
+        </div>
+        <div class="trees cols">
+            <div>
+                <span class="counter-numbers animate-number">
+                    <span>5</span>,<span>0</span><span>4</span><span>0</span>
+                </span>
+                <p class="lrg">Total number of trees saved by UKE customers</p>
+            </div>
+        </div>
+        <div>
+            <p>
+                Annual electricity usage for <span><span class="animate-non-span-number">6,857</span></span> homes
+            </p>
+        </div>
+        <div>
+            <p>
+                <span><span class="animate-non-span-number">100,446,647</span></span> miles travelled every year in the UK
+            </p>
+        </div>
+    </body>
+</html>
